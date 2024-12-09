@@ -100,18 +100,20 @@ def P2G(x: wp.array(dtype=wp.vec3),
                 # grid_m[idx] += weight
 
                 ##APIC 
-                grid_v[idx] += weight * (v[p] + C[p] @ dpos)
-                grid_m[idx] += weight
+                # grid_v[idx] += weight * (v[p] + C[p] @ dpos)
+                # grid_m[idx] += weight
 
                 ##MPM
-                stress = -dt * 4.0 * E * (J[p] - 1.0) / wp.pow(dx, 2.0)
-                # stress = -dt * 4.0 * p_vol * E * (J[p] - 1.0) / wp.pow(dx, 2.0)
+                # stress = -dt * 4.0 * E * (J[p] - 1.0) / wp.pow(dx, 2.0)
+                stress = -dt * 4.0 * p_vol * E * (J[p] - 1.0) / wp.pow(dx, 2.0)
                 affine = wp.mat33(
                     stress, 0.0, 0.0,
                     0.0, stress, 0.0,
                     0.0, 0.0, 0.0) + C[p]
                 grid_v[idx] += weight * (v[p] * p_mass + affine @ dpos)
                 grid_m[idx] += weight * p_mass
+                # grid_v[idx] += weight * (v[p] + affine @ dpos)
+                # grid_m[idx] += weight
 
 
 @wp.kernel
@@ -305,10 +307,10 @@ if __name__ == '__main__':
     while True:
         sim.stimulate()
         sim.render()
-        # if sim.frame == 1000:
-        #     random_number = float(np.random.uniform(-5.0, 5.0))
-        #     sim.change_v(random_number)
-        #     sim.frame = 0
+        if sim.frame == 1000:
+            random_number = float(np.random.uniform(-5.0, 5.0))
+            sim.change_v(random_number)
+            sim.frame = 0
 
 
 
